@@ -4,9 +4,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.domain.Sort;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,19 +14,15 @@ import java.util.List;
 public class PagingSort {
 
     @ApiModelProperty(value = "排序字段和升降序")
-    @Valid
     private List<Order> orders;
 
     @Data
     public static class Order {
 
         @ApiModelProperty(value = "排序方向", required = true)
-        @NotNull
         private PagingSort.Direction direction;
 
         @ApiModelProperty(value = "排序字段", required = true)
-        @NotNull
-        @NotBlank
         private String property;
 
     }
