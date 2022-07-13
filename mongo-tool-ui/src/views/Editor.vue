@@ -4,48 +4,38 @@
       <div class="tree-container" :style="{height: `${winHeight}px`}">
 
         <el-tree :props="props" :load="loadNode" node-key="id"
+                 @node-click="treeClick"
                  lazy highlight-current>
           <span class="custom-tree-node" slot-scope="{ node, data }">
             <span>
-              <i class="el-icon-document"></i>
+              <i :class="data.icon"></i>
               {{ node.label }}
             </span>
            </span>
         </el-tree>
-
       </div>
 
-      <!--<el-tabs tab-position="left" :style="{height: `${winHeight}px`}">
-        <el-tab-pane label="表结构">
-          <div class="tree-container" :style="{height: `${winHeight}px`}">
-            <div v-for="(table,index) in treeData" :key="table.tname" class="tree-table">
-              <div class="tree-table-name" @click="onFoldTable(index)">
-                <span class="tree-fold-btn"
-                    :class="['tree-fold-btn', foldIndex.includes(index) ? 'el-icon-remove-outline' : 'el-icon-circle-plus-outline']"
-                />
-                <img src="@/assets/table.png" width="15px">
-                {{ table.tname }}
-              </div>
-              <template v-if="table.fields.length > 0 && foldIndex.includes(index)">
-                <div v-for="field in table.fields" :key="field.name" class="tree-table-field">
-                  {{ field.COLUMN_NAME }}
-                  &lt;!&ndash; <span class="el-icon-document-copy"></span> &ndash;&gt;
-                </div>
-              </template>
-            </div>
-          </div>
-        </el-tab-pane>
-        &lt;!&ndash;<el-tab-pane label="命令集">
-          <ul class="order-list">
-            <li v-for="item in commitsList" :key="item.createTime" @click="copySQLOrder(item)">
-              <img src="@/assets/order.png">
-              {{ item.title }}
-            </li>
-          </ul>
-        </el-tab-pane>&ndash;&gt;
-      </el-tabs>-->
     </div>
     <div class="home-contaioner-right">
+      <div class="database-select">
+        <el-select v-model="connectionValue" size = "small"  filterable placeholder="请选择">
+          <el-option
+                  v-for="item in connectionOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+          </el-option>
+        </el-select>
+
+        <el-select v-model="databaseValue" size = "small"  filterable placeholder="请选择">
+          <el-option
+                  v-for="item in databaseOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+          </el-option>
+        </el-select>
+      </div>
       <!-- SQL编辑器 -->
       <codemirror-editor
         ref="codemirrorEditor"
@@ -122,11 +112,22 @@ export default {
         sql: '',
         code: '',
         sqlState: ''
-      }
+      },
+      connectionOptions: [],
+      connectionValue: '',
+
+      databaseOptions: [],
+      databaseValue: ''
     }
   },
   created() {
-    this.queryTables()
+    this.getDataBaseTrees({ level: 0 }).then(res => {
+      const { data } = res;
+      this.connectionOptions = data.map(item => ({
+        value: item.connectionId,
+        label: item.name,
+      }))
+    });
   },
   mounted() {
     this.winHeight = window.innerHeight - 52
@@ -151,49 +152,32 @@ export default {
       'addLogs'
     ]),
     ...mapActions('http', [
-      'getAllConnection',
-      'getTreeData',
+      'getTableData',
+      'getDataBaseTrees',
       'getFieldNames',
       'sendSQL'
     ]),
     loadNode(node, resolve) {
-      if (node.level === 0) {
-        this.queryConnections().then(res => {
-          const { data } = res;
-         resolve(data.map(item => ({
-           id: item.id,
-           name: item.database,
-           isLeaf: false
-         })));
-        });
-      }
-      if(node.level > 0){
-        console.log(node.data)
-        this.queryDataBases().then(res => {
-          const { data } = res;
-          resolve(data.map(item => ({
-            id: item.id,
-            name: item.database,
-            isLeaf: false
-          })));
-        });
+      const connectionId =  node.data ? node.data.connectionId : undefined
+      const dataBaseName =  node.data ? node.data.name : undefined
+      this.getDataBaseTrees({ level: node.level, connectionId , dataBaseName }).then(res => {
+        const { data } = res;
+        resolve(data.map(item => ({
+          connectionId: item.connectionId,
+          icon: item.icon,
+          name: item.name,
+          isLeaf: item.leafed
+        })));
+      });
+    },
+    treeClick(data, node){
+      if(node.level === 3) {
+        console.log(node, data)
+
+      //  connectionId name
+        this.getTableData({ connectionId : data.connectionId, documentName : data.name  }).then();
 
       }
-
-      /*if (node.level > 0) {
-
-        console.log(node.data)
-        const data = [{
-          name: 'leaf',
-          isLeaf: true
-        }, {
-          name: 'zone',
-
-        }];
-        resolve(data);
-
-      }*/
-
     },
     onEditorInput(code) {
       // 编辑器输入事件
@@ -238,16 +222,6 @@ export default {
         this.$message.warning('已取消提交')
       })
     },
-    async queryConnections(){
-      const res = await this.getAllConnection();
-      return res;
-    },
-
-    async queryDataBases(connectionId){
-      const res = await this.getDataBases({ id : connectionId });
-      return res;
-    },
-
     async executeSql() {
       // 执行SQL语句
       if (this.code.trim() === '') {
@@ -285,7 +259,7 @@ export default {
         if (type === '1') {
           this.runType = 1
           this.runResult = `执行成功！${result.affectedRows}行数据受影响`
-          this.queryTables()
+        //  this.queryTables()
         } else if (type === '2') {
           this.runType = 3
           this.runResult = '执行失败！'
@@ -295,7 +269,7 @@ export default {
       this.runLoading = false
     },
 
-    async queryTables() {
+    /*async queryTables() {
       // 查询所有表
       const res = await this.getTreeData()
       const { type, result } = res
@@ -323,7 +297,7 @@ export default {
         })
         this.$refs.codemirrorEditor.setHintOptions(tips)
       }
-    }
+    }*/
   }
 }
 </script>
@@ -433,6 +407,10 @@ export default {
     flex: 6;
     height: 100%;
 
+    .database-select {
+      margin-left: 2%;
+      margin-top: 1%;
+    }
     // 工具栏
     .header-tools {
       height: 40px;

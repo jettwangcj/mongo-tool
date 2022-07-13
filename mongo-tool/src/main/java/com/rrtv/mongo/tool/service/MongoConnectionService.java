@@ -2,6 +2,7 @@ package com.rrtv.mongo.tool.service;
 
 import com.rrtv.mongo.tool.vo.request.SaveConnectionRequest;
 import com.rrtv.mongo.tool.vo.result.ConnectionVo;
+import com.rrtv.mongo.tool.vo.result.DataBaseTreeVo;
 import com.rrtv.mongo.tool.vo.result.DataBaseVo;
 import com.rrtv.mongo.tool.vo.result.FrontEndPagingResponse;
 
@@ -22,21 +23,17 @@ public interface MongoConnectionService {
     void createConnection(SaveConnectionRequest request);
 
     /**
-     *  分页获取连接
-     * @return
-     */
-    List<ConnectionVo> queryConnectionList();
-
-    /**
      *  删除 连接
      * @param id
      */
     void deleteConnection(Long id);
 
+
     /**
-     *  获取数据库
+     *  获取连接/数据库/集合 tree
+     * @param level
      * @param connectionId
      * @return
      */
-    DataBaseVo queryDataBases(Long connectionId);
+    List<DataBaseTreeVo> queryDataBaseTrees(Integer level, Long connectionId, String dataBaseName);
 }

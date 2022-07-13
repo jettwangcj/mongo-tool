@@ -29,16 +29,19 @@ public class MongoConnectionController {
 
 
     @ApiOperation(value = "获取连接列表")
-    @GetMapping("/list")
-    public ResultResponse<List<ConnectionVo>> list() {
-        return ResultResponse.success(mongoConnectionService.queryConnectionList());
+    @GetMapping("/trees")
+    public ResultResponse<List<DataBaseTreeVo>> getDataBaseTrees(@RequestParam("level") Integer level,
+                                                                 @RequestParam(value = "connectionId", required = false) Long connectionId,
+                                                                 @RequestParam(value = "dataBaseName", required = false) String dataBaseName) {
+        return ResultResponse.success(mongoConnectionService.queryDataBaseTrees(level, connectionId, dataBaseName));
     }
 
+    @ApiOperation(value = "获取连接列表")
+    @GetMapping("/table/data")
+    public ResultResponse<List<DataBaseTreeVo>> getDataBaseTrees(@RequestParam(value = "connectionId") Long connectionId,
+                                                                 @RequestParam(value = "documentName") String documentName) {
 
-    @ApiOperation(value = "获取连接下的数据库")
-    @PostMapping("/database")
-    public ResultResponse<DataBaseVo> getDataBases(@RequestParam("id") Long connectionId) {
-        return ResultResponse.success(mongoConnectionService.queryDataBases(connectionId));
+        return ResultResponse.success();
     }
 
 

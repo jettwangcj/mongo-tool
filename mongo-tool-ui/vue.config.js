@@ -1,5 +1,7 @@
 module.exports = {
   devServer: {
+      port: 3000,
+      public: 'localhost:3000',
       proxy: {
       '/api': {
         target: process.env.SERVER_PROXY_API, //服务端地址

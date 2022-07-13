@@ -1,7 +1,6 @@
 import {
-  getDataBases,
-  getAllConnection,
-  getTreeData,
+  getDataBaseTrees,
+  getTableData,
   getFieldNames,
   sendSQL
 } from '@/api'
@@ -16,17 +15,13 @@ const mutations = {}
 
 const actions = {
 
-  async getDataBases({ commit }, params) {
-    const data = await getDataBases(params)
+  async getTableData({ commit }, params) {
+    const data = await getTableData(params)
     return data
   },
 
-  async getAllConnection({ commit }, params) {
-    const data = await getAllConnection(params)
-    return data
-  },
-  async getTreeData({ commit }, params) {
-    const data = await getTreeData(params)
+  async getDataBaseTrees({ commit }, params) {
+    const data = await getDataBaseTrees(params)
     return data
   },
   async getFieldNames({ commit }, params) {

@@ -1,28 +1,21 @@
 import http from '@/http'
 
-export function getDataBases(params) {
+export function getDataBaseTrees(params) {
   return http({
-    url: '/connection/database',
+    url: '/connection/trees',
     method: 'get',
     params
   })
 }
 
-export function getAllConnection() {
+export function getTableData(params) {
   return http({
-    url: '/connection/list',
-    method: 'get',
-  })
-}
-
-// 获取所有表名称
-export function getTreeData(params) {
-  return http({
-    url: '/query/tables',
+    url: '/connection/table/data',
     method: 'get',
     params
   })
 }
+
 
 // 获取指定表的字段名
 export function getFieldNames(params) {
