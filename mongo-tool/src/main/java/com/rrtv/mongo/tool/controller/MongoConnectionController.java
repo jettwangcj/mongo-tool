@@ -55,7 +55,7 @@ public class MongoConnectionController {
 
     @ApiOperation(value = "创建mongo的连接")
     @PostMapping("/create")
-    public ResultResponse<String> createConnection(SaveConnectionRequest request) {
+    public ResultResponse<String> createConnection(@RequestBody SaveConnectionRequest request) {
         mongoConnectionService.createConnection(request);
         return ResultResponse.success();
     }

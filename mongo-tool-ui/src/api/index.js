@@ -1,5 +1,22 @@
 import http from '@/http'
 
+export function testConnection(params) {
+    return http({
+        url: '/connection/test',
+        method: 'get',
+        params
+    })
+}
+
+
+export function createConnection(params) {
+    return http({
+        url: '/connection/create',
+        method: 'post',
+        params
+    })
+}
+
 export function getDataBaseTrees(params) {
   return http({
     url: '/connection/trees',

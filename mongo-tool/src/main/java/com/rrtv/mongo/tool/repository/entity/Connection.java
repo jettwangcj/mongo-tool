@@ -25,11 +25,11 @@ public class Connection implements Serializable {
     @Column(name = "authority_key")
     private String authorityKey;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "hosts")
     private String hosts;
-
-    @Column(name = "data_base")
-    private String database;
 
     @Column(name = "url")
     private String url;

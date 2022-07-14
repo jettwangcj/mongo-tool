@@ -33,12 +33,11 @@ public class MongoDatabaseRepository {
     }
 
 
-    @PostConstruct
     public void loadData(){
 
       //  MONGO_CLIENT_DATABASE_FACTORY_CACHE.put("key1", new SimpleMongoClientDatabaseFactory("mongodb://localhost:27017/local"));
-        MONGO_CLIENT_DATABASE_FACTORY_CACHE.put("key2", new SimpleMongoClientDatabaseFactory("mongodb://bokbok-content:monodbcontent2022@s-t4ndc1567f52f9a4.mongodb.singapore.rds.aliyuncs.com:3717,s-t4n6d78ce4ad2224.mongodb.singapore.rds.aliyuncs.com:3717/bokbok-content"));
-        MONGO_CLIENT_DATABASE_FACTORY_CACHE.put("key3", new SimpleMongoClientDatabaseFactory("mongodb://bokbok-user:monodbuser2022@s-t4n3b6379cabf4e4.mongodb.singapore.rds.aliyuncs.com:3717,s-t4n60bd3cfe61af4.mongodb.singapore.rds.aliyuncs.com:3717/bokbok-user"));
+       /* MONGO_CLIENT_DATABASE_FACTORY_CACHE.put("key2", new SimpleMongoClientDatabaseFactory("mongodb://bokbok-content:monodbcontent2022@s-t4ndc1567f52f9a4.mongodb.singapore.rds.aliyuncs.com:3717,s-t4n6d78ce4ad2224.mongodb.singapore.rds.aliyuncs.com:3717/bokbok-content"));
+        MONGO_CLIENT_DATABASE_FACTORY_CACHE.put("key3", new SimpleMongoClientDatabaseFactory("mongodb://bokbok-user:monodbuser2022@s-t4n3b6379cabf4e4.mongodb.singapore.rds.aliyuncs.com:3717,s-t4n60bd3cfe61af4.mongodb.singapore.rds.aliyuncs.com:3717/bokbok-user"));*/
     }
 
 }

@@ -23,7 +23,4 @@ public class DataBaseTreeVo implements Serializable {
 
     private boolean leafed;
 
-    private String icon;
-
-
 }

@@ -25,3 +25,6 @@
   content: "\ec21";
 }
 
+.icon-connection:before {
+    content: "\e60e";
+}

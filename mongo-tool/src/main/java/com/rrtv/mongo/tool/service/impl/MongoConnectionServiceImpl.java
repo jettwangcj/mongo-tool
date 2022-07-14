@@ -6,6 +6,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 import com.rrtv.mongo.tool.repository.ConnectionRepository;
+import com.rrtv.mongo.tool.repository.MongoDatabaseRepository;
 import com.rrtv.mongo.tool.repository.entity.Connection;
 import com.rrtv.mongo.tool.service.MongoConnectionService;
 import com.rrtv.mongo.tool.vo.request.SaveConnectionRequest;
@@ -36,12 +37,13 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
     @Autowired
     private ConnectionRepository repository;
 
+    @Autowired
+    private MongoDatabaseRepository databaseRepository;
 
     @Override
     public void createConnection(SaveConnectionRequest request) {
         ConnectionString connectionString = new ConnectionString(request.getUrl());
         List<String> hosts = connectionString.getHosts();
-        String database = connectionString.getDatabase();
         Connection connection;
         if(request.getId() != null){
             connection = repository.findById(request.getId()).orElseThrow(() -> new RuntimeException("资源不存在"));
@@ -49,7 +51,7 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
             connection = new Connection();
             connection.setAuthorityKey(UUID.randomUUID().toString().replace("-", ""));
         }
-        connection.setDatabase(database);
+        connection.setName(request.getName());
         connection.setUrl(request.getUrl());
         connection.setHosts(String.join(",", hosts));
         repository.save(connection);
@@ -58,7 +60,7 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
 
     private List<DataBaseTreeVo> queryConnectionList() {
         List<Connection> connections = repository.findAll();
-        return CollectionUtils.isEmpty(connections) ? new ArrayList<>() : connections.stream().map(item -> new DataBaseTreeVo(item.getId(), item.getDatabase(), false, "iconfont icon-mongodb")).collect(Collectors.toList());
+        return CollectionUtils.isEmpty(connections) ? new ArrayList<>() : connections.stream().map(item -> new DataBaseTreeVo(item.getId(), item.getName(), false)).collect(Collectors.toList());
     }
 
     @Override
@@ -70,7 +72,7 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
         Connection connection = repository.findById(connectionId).orElseThrow(() -> new RuntimeException("资源不存在"));
         MongoClient mongoClient = MongoClients.create(connection.getUrl());
         List<DataBaseTreeVo> databases = new ArrayList<>();
-        mongoClient.listDatabaseNames().forEach(item -> databases.add(new DataBaseTreeVo(connection.getId(), item, false, "iconfont icon-database")));
+        mongoClient.listDatabaseNames().forEach(item -> databases.add(new DataBaseTreeVo(connection.getId(), item, false)));
         return databases;
     }
 
@@ -84,6 +86,9 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
             if(connectionId == null){
                 throw new RuntimeException("连接参数不能为空");
             }
+
+            databaseRepository.load
+
             return this.queryDataBases(connectionId);
         } else if (level == 2){
             if(connectionId == null || StringUtils.isEmpty(dataBaseName)){
@@ -102,7 +107,7 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
         MongoClient mongoClient = MongoClients.create(connection.getUrl());
         MongoDatabase database = mongoClient.getDatabase(dataBaseName);
         List<DataBaseTreeVo> documents = new ArrayList<>();
-        database.listCollectionNames().forEach(item -> documents.add(new DataBaseTreeVo(connection.getId(), item, true, "iconfont icon-table")));
+        database.listCollectionNames().forEach(item -> documents.add(new DataBaseTreeVo(connection.getId(), item, true)));
         return documents;
     }
 
