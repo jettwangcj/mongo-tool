@@ -17,7 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class DataBaseTreeVo implements Serializable {
 
-    private Long connectionId;
+    private String connectionId;
 
     private String name;
 

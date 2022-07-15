@@ -16,27 +16,10 @@ spring:
       # 设置文件缓存的临界点,超过则先保存到临时目录,默认为0,所有文件都会进行缓存
       file-size-threshold: 0
 
-  datasource:
-    url: jdbc:mysql://rm-t4ntn0955m8605823.mysql.singapore.rds.aliyuncs.com:3306/mongo_test?autoReconnect=true&useSSL=false&allowMultiQueries=true
-    username: ironman_test
-    password: V5tz6jOdAoaCWTHe
-    #数据源类型
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      #最小空闲连接，默认值10，小于0或大于maximum-pool-size，都会重置为maximum-pool-size
-      minimumIdle: 10
-      #最大连接数，小于等于0会被重置为默认值10；大于零小于1会被重置为minimum-idle的值
-      maximumPoolSize: 65
-      #连接超时时间:毫秒，小于250毫秒，否则被重置为默认值30秒
-      connection-timeout: 1000
-      #从池中获取的连接是否默认处于只读模式
-      readOnly: false
-      #连接测试查询
-      connection-test-query: SELECT 1
-
-  jpa:
-    open-in-view: true
-    show-sql: true
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/mongo_tool
+      auto-index-creation: true
 
 server:
   port: 8090

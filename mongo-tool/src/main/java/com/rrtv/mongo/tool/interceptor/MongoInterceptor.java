@@ -26,6 +26,7 @@ public class MongoInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("token");
+
         MongoDatabaseFactory mongoDatabaseFactory = repository.get(token);
         MongoContextHolder.setMongoDatabaseThreadLocal(mongoDatabaseFactory);
         return true;

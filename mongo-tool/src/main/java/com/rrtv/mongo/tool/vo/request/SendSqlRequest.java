@@ -13,7 +13,6 @@ import java.io.Serializable;
 @Data
 public class SendSqlRequest implements Serializable {
 
-
-
+    private String sql;
 
 }

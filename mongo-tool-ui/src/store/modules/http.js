@@ -29,6 +29,7 @@ const actions = {
     return data
   },
   async sendSQL({ commit }, params) {
+    console.log('header1111:', params)
     const data = await sendSQL(params)
     return data
   }

@@ -219,7 +219,7 @@ export default {
         this.getDataBaseTrees({ level: 1, connectionId : this.connectionValue }).then(res => {
             const { data } = res;
             this.databaseOptions = data.map(item => ({
-                value: item.connectionId,
+                value: item.name,
                 label: item.name,
             }))
         });
@@ -273,13 +273,20 @@ export default {
         this.$message.warning('请先编辑 SQL 命令！')
         return
       }
+
+      if(this.connectionValue === '' || this.databaseValue === ''){
+        this.$message.warning('请先选择连接和数据库！')
+        return
+      }
+
       this.runLoading = true
       this.tableData = []
       this.columns = []
       this.runResult = '执行中...'
       this.runType = 0
       this.errMsg = {}
-      const res = await this.sendSQL({ sql: this.code })
+      const token = this.connectionValue.concat('#').concat(this.databaseValue)
+      const res = await this.sendSQL({ sql: this.code, token })
       const { type, result } = res
       if (this.code.startsWith('SELECT')) {
         if (type === '1') {

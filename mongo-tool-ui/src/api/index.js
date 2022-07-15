@@ -45,9 +45,12 @@ export function getFieldNames(params) {
 
 // 发送SQL语句
 export function sendSQL(params) {
+  const token = params.token
+  delete params.token
   return http({
-    url: '/ext',
+    url: '/sql/send',
     method: 'post',
-    params
+    params,
+    headers:{ token }
   })
 }

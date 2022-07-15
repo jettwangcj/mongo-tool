@@ -1,10 +1,7 @@
 package com.rrtv.mongo.tool.service;
 
 import com.rrtv.mongo.tool.vo.request.SaveConnectionRequest;
-import com.rrtv.mongo.tool.vo.result.ConnectionVo;
 import com.rrtv.mongo.tool.vo.result.DataBaseTreeVo;
-import com.rrtv.mongo.tool.vo.result.DataBaseVo;
-import com.rrtv.mongo.tool.vo.result.FrontEndPagingResponse;
 
 import java.util.List;
 
@@ -26,7 +23,7 @@ public interface MongoConnectionService {
      *  删除 连接
      * @param id
      */
-    void deleteConnection(Long id);
+    void deleteConnection(String id);
 
 
     /**
@@ -35,5 +32,5 @@ public interface MongoConnectionService {
      * @param connectionId
      * @return
      */
-    List<DataBaseTreeVo> queryDataBaseTrees(Integer level, Long connectionId, String dataBaseName);
+    List<DataBaseTreeVo> queryDataBaseTrees(Integer level, String connectionId, String dataBaseName);
 }

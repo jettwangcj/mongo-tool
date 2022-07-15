@@ -1,8 +1,9 @@
 package com.rrtv.mongo.tool.repository.entity;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -13,25 +14,16 @@ import java.io.Serializable;
  */
 
 @Data
-@Entity
-@Table(name = "connection")
+@Document(value = "connection")
 public class Connection implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    private String id;
 
-    @Column(name = "authority_key")
-    private String authorityKey;
-
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "hosts")
     private String hosts;
 
-    @Column(name = "url")
     private String url;
 
 }

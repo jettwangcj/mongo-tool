@@ -31,14 +31,14 @@ public class MongoConnectionController {
     @ApiOperation(value = "获取连接列表")
     @GetMapping("/trees")
     public ResultResponse<List<DataBaseTreeVo>> getDataBaseTrees(@RequestParam("level") Integer level,
-                                                                 @RequestParam(value = "connectionId", required = false) Long connectionId,
+                                                                 @RequestParam(value = "connectionId", required = false) String connectionId,
                                                                  @RequestParam(value = "dataBaseName", required = false) String dataBaseName) {
         return ResultResponse.success(mongoConnectionService.queryDataBaseTrees(level, connectionId, dataBaseName));
     }
 
     @ApiOperation(value = "获取连接列表")
     @GetMapping("/table/data")
-    public ResultResponse<List<DataBaseTreeVo>> getDataBaseTrees(@RequestParam(value = "connectionId") Long connectionId,
+    public ResultResponse<List<DataBaseTreeVo>> getDataBaseTrees(@RequestParam(value = "connectionId") String connectionId,
                                                                  @RequestParam(value = "documentName") String documentName) {
 
         return ResultResponse.success();
@@ -47,7 +47,7 @@ public class MongoConnectionController {
 
     @ApiOperation(value = "删除mongo的连接")
     @PostMapping("/delete")
-    public ResultResponse<String> deleteConnection(Long id) {
+    public ResultResponse<String> deleteConnection(String id) {
         mongoConnectionService.deleteConnection(id);
         return ResultResponse.success();
     }

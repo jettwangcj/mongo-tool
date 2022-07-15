@@ -1,8 +1,7 @@
 package com.rrtv.mongo.tool.repository;
 
 import com.rrtv.mongo.tool.repository.entity.Connection;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * @Classname ConnectionRepository
@@ -10,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @Date 2022/7/12 13:52
  * @Created by wangchangjiu
  */
-public interface ConnectionRepository extends JpaRepository<Connection, Long>, JpaSpecificationExecutor<Connection> {
+public interface ConnectionRepository extends MongoRepository<Connection,String> {
 }

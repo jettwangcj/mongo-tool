@@ -27,16 +27,16 @@ instance.interceptors.response.use(
 )
 
 // 封装的请求方法
-async function http({ url, method = 'get', params, data, simple = true }) {
+async function http({ url, method = 'get', params, data , headers ,simple = true }) {
   let result
   if (method === 'get' || method === 'delete') {
-    await instance[method](url, { params, data }).then(res => {
+    await instance[method](url, { params, data, headers }).then(res => {
       result = simple ? res.data : res
     }).catch(error => {
       result = error
     })
   } else if (method === 'post' || method === 'put' || method === 'patch') {
-    await instance[method](url, params).then(res => {
+    await instance[method](url,  params, { headers } ).then(res => {
       result = simple ? res.data : res
     }).catch(error => {
       result = error

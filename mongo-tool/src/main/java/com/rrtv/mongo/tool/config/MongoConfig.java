@@ -19,7 +19,7 @@ public class MongoConfig {
 
     @Bean
     public MongoDatabaseFactory mongoDatabaseFactory(@Autowired MongoDatabaseRepository repository){
-        return repository.getOne();
+        return repository.getLocal();
     }
 
     @Bean

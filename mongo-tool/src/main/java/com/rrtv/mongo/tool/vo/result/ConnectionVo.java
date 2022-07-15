@@ -15,8 +15,6 @@ public class ConnectionVo implements Serializable {
 
     private Long id;
 
-    private String authorityKey;
-
     private String hosts;
 
     private String database;
