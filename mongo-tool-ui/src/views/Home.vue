@@ -21,8 +21,8 @@
       <div class="database-select">
         <el-select v-model="connectionValue" size = "small"  filterable @change="connectionChangeHandler" placeholder="--请选择连接--">
             <template #prefix>
-                <span >
-                  <i class="iconfont icon-mongodb" style="color:green;position: fixed;margin-top: 8px"></i>
+                <span style="display: table-cell;vertical-align: middle;">
+                  <i class="iconfont icon-mongodb" style="color: green;top: 50%;position: absolute;transform: translateY(-50%);"></i>
                 </span>
             </template>
           <el-option
@@ -35,8 +35,8 @@
 
         <el-select v-model="databaseValue" size = "small" style = "margin-left: 1%"  filterable placeholder="--请选择数据库--">
             <template #prefix>
-                <span >
-                  <i class="iconfont icon-database" style="color:#66b1ff;position: fixed;margin-top: 8px"></i>
+                <span style="display: table-cell;vertical-align: middle;">
+                  <i class="iconfont icon-database" style="color:#66b1ff;top: 50%;position: absolute;transform: translateY(-50%);"></i>
                 </span>
             </template>
             <el-option
