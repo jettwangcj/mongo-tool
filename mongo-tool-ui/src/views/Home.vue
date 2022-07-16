@@ -64,13 +64,13 @@
             <span v-if="runType === 2" class="el-icon-warning" style="color: #E6A23C;"></span>
             <span v-if="runType === 3" class="el-icon-error" style="color: #F56C6C;"></span>
             {{ runResult }}
-            <template v-if="runType === 3">
+<!--            <template v-if="runType === 3">
               <div class="error-message"><b>message：</b>{{ errMsg.sqlMessage }}</div>
               <div class="error-message"><b>errno：</b>{{ errMsg.errno }}</div>
               <div class="error-message"><b>sql：</b>"{{ errMsg.sql }}"</div>
               <div class="error-message"><b>code：</b>{{ errMsg.code }}</div>
               <div class="error-message"><b>sqlState：</b>{{ errMsg.sqlState }}</div>
-            </template>
+            </template>-->
           </el-tab-pane>
           <el-tab-pane label="结果">
             <el-table
@@ -287,8 +287,39 @@ export default {
       this.errMsg = {}
       const token = this.connectionValue.concat('#').concat(this.databaseValue)
       const res = await this.sendSQL({ sql: this.code, token })
-      const { type, result } = res
-      if (this.code.startsWith('SELECT')) {
+
+      const { code } = res
+      if(code === '00000'){
+        const { sqlType, success, failMessage, columns, data } = res.data
+        if(sqlType === 1){
+          // 查询语句
+          if(success){
+            // 执行成功
+            this.runType = 1
+            this.runResult = `成功查询 ${data.length} 条数据`
+            if (data.length > 0) {
+              this.tableData = [...data]
+              columns.forEach(column => this.columns.push({ label: column,value: column }))
+            }
+          } else {
+            // 执行失败
+
+          }
+        } else {
+          // 非查询语句
+
+        }
+
+      } else {
+        this.runType = 3
+        this.runResult = '你小子把服务器整挂了。。。。。一个字：绝。。。'
+      }
+
+
+
+
+
+     /* if (this.code.startsWith('SELECT')) {
         if (type === '1') {
           this.runType = 1
           this.runResult = `成功查询 ${result.length} 条数据`
@@ -317,7 +348,7 @@ export default {
           this.runResult = '执行失败！'
           this.errMsg = {...result}
         }
-      }
+      }*/
       this.runLoading = false
     },
 

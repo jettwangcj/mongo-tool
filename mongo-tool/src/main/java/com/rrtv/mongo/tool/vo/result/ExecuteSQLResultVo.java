@@ -11,9 +11,12 @@ import java.io.Serializable;
  * @Created by wangchangjiu
  */
 @Data
-public class ExecuteSQLResultVo implements Serializable {
+public abstract class ExecuteSQLResultVo implements Serializable {
 
-    //private
+    private Integer sqlType;
 
+    private boolean success;
+
+    private String failMessage;
 
 }

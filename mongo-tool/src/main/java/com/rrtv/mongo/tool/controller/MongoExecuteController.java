@@ -4,6 +4,7 @@ import com.rrtv.SQLToMongoTemplate;
 import com.rrtv.annotation.EnableSqlToMongoMapper;
 import com.rrtv.mongo.tool.service.MongoSQLExecuteService;
 import com.rrtv.mongo.tool.vo.request.SendSqlRequest;
+import com.rrtv.mongo.tool.vo.result.ExecuteSQLResultVo;
 import com.rrtv.mongo.tool.vo.result.ResultResponse;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -31,11 +32,10 @@ public class MongoExecuteController {
     @Autowired
     private MongoSQLExecuteService mongoSQLExecuteService;
 
-    @ApiOperation(value = "删除mongo的连接")
+    @ApiOperation(value = "执行SQL语句")
     @PostMapping("/send")
-    public ResultResponse<List<Map>> sendSql(@RequestBody SendSqlRequest request) {
-        mongoSQLExecuteService.executeSql(request.getSql());
-        return ResultResponse.success();
+    public ResultResponse<ExecuteSQLResultVo> sendSql(@RequestBody SendSqlRequest request) {
+        return ResultResponse.success(mongoSQLExecuteService.executeSql(request.getSql()));
     }
 
 

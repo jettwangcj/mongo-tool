@@ -1,5 +1,7 @@
 package com.rrtv.mongo.tool.service;
 
+import com.rrtv.mongo.tool.vo.result.ExecuteSQLResultVo;
+
 /**
  * @Classname MongoSQLExecuteService
  * @Description
@@ -8,6 +10,6 @@ package com.rrtv.mongo.tool.service;
  */
 public interface MongoSQLExecuteService {
 
-    void executeSql(String sql);
+    ExecuteSQLResultVo executeSql(String sql);
 
 }
