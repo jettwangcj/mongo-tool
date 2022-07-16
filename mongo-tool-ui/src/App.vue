@@ -1,10 +1,26 @@
 <template>
   <div id="app">
     <div id="nav">
-      <el-button type="text" icon="iconfont icon-connection" @click="createConnectionHandler">创建连接</el-button>
-      <router-link to="/">SQL编辑器</router-link>
-      <router-link to="/commits">提交记录</router-link>
-      <router-link to="/setting">设置</router-link>
+      <el-button type="text" icon="iconfont icon-createConnection"
+                 @click="createConnectionHandler"
+                 style="margin-right: 10px;color: #fff;">
+        创建连接
+      </el-button>
+      <router-link to="/">
+        <div style="display: inline-block">
+          <i class="iconfont icon-SQLEditor mr5"></i>SQL编辑器
+        </div>
+      </router-link>
+      <router-link to="/commits">
+        <div style="display: inline-block">
+          <i class="iconfont icon-record mr5"></i>提交记录
+        </div>
+      </router-link>
+      <router-link to="/setting">
+        <div style="display: inline-block">
+          <i class="iconfont icon-setting mr5"></i>设置
+        </div>
+      </router-link>
     </div>
     <router-view/>
 
@@ -123,18 +139,21 @@ html,body {
 }
 
 #nav {
-  height: 50px;
-  line-height: 50px;
+  height: 60px;
+  line-height: 60px;
   padding-left: 30px;
-  background-color: #545c64;
+  background-color: #29323b;
+  .mr5{
+    margin-right: 5px;
+  }
   a {
     color: #fff;
     text-decoration: none;
     margin: 0px 15px;
-    font-size: 14px;
+    font-size: 15px;
 
     &.router-link-exact-active {
-      color: #ffd04b;
+      color: #66b1ff;
     }
   }
 }

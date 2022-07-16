@@ -1,8 +1,8 @@
 @font-face {
-  font-family: "iconfont"; /* Project id 3520246 */
-  src: url('iconfont.woff2?t=1657706063693') format('woff2'),
-       url('iconfont.woff?t=1657706063693') format('woff'),
-       url('iconfont.ttf?t=1657706063693') format('truetype');
+  font-family: "iconfont"; /* Project id 3521473 */
+  src: url('iconfont.woff2?t=1657956395863') format('woff2'),
+       url('iconfont.woff?t=1657956395863') format('woff'),
+       url('iconfont.ttf?t=1657956395863') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,30 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-format:before {
+  content: "\e735";
+}
+
+.icon-video-pause:before {
+  content: "\e80b";
+}
+
+.icon-tingzhi:before {
+  content: "\e611";
+}
+
+.icon-video-play:before {
+  content: "\e60c";
+}
+
+.icon-promotion:before {
+  content: "\e631";
+}
+
+.icon-yunhang:before {
+  content: "\e653";
 }
 
 .icon-table:before {
@@ -25,6 +49,39 @@
   content: "\ec21";
 }
 
-.icon-connection:before {
-    content: "\e60e";
+.icon-setting:before {
+  content: "\e68f";
 }
+
+.icon-SQLEditor:before {
+  content: "\e604";
+}
+
+.icon-record:before {
+  content: "\e62d";
+}
+
+.icon-setting1:before {
+  content: "\e630";
+}
+
+.icon-setting2:before {
+  content: "\e63c";
+}
+
+.icon-record2:before {
+  content: "\e617";
+}
+
+.icon-SQLEditor2:before {
+  content: "\e619";
+}
+
+.icon-createConnection:before {
+  content: "\e71a";
+}
+
+.icon-lianjie1:before {
+  content: "\e60e";
+}
+

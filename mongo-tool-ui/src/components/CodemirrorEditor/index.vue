@@ -7,19 +7,19 @@
     <div class="header-tools">
         <ul class="tools-list">
           <li class="tools-item" @click="onRunCode">
-            <i class="el-icon-video-play"></i>
+            <i class="iconfont icon-video-play" style="color: #67C23A"></i>
             运行
           </li>
           <li class="tools-item" @click="onStopRun">
-            <i class="el-icon-video-pause"></i>
+            <i class="iconfont icon-video-pause" style="color: red"></i>
             停止
           </li>
           <li class="tools-item" @click="onCommitOrder">
-            <i class="el-icon-s-promotion"></i>
+            <i class="iconfont icon-promotion "></i> <!--el-icon-s-promotion-->
             提交
           </li>
           <li class="tools-item" @click="onFormatSQL">
-            <i class="el-icon-document"></i>
+            <i class="iconfont icon-format" style="color: #66b1ff"></i>
             格式化
           </li>
         </ul>
