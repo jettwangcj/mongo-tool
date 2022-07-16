@@ -15,7 +15,7 @@
             停止
           </li>
           <li class="tools-item" @click="onCommitOrder">
-            <i class="iconfont icon-promotion "></i> <!--el-icon-s-promotion-->
+            <i class="iconfont icon-promotion " style="color: #175569"></i> <!--el-icon-s-promotion-->
             提交
           </li>
           <li class="tools-item" @click="onFormatSQL">

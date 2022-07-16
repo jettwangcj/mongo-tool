@@ -14,6 +14,14 @@
             </span>
            </span>
         </el-tree>
+
+        <vue-context-menu :contextMenuData="contextMenuData"
+                          @editConnection="editConnection"
+                          @newConnection="newConnection"
+                          @delConnection="delConnection"
+                          @newQuery="newQuery"
+                          @newDatabase="newDatabase"></vue-context-menu>
+
       </div>
 
     </div>
@@ -143,7 +151,22 @@ export default {
       databaseOptions: [],
       databaseValue: '',
 
-      dialogVisible: false
+      dialogVisible: false,
+
+      contextMenuData: {
+        // the contextmenu name(@1.4.1 updated)
+        menuName: "demo",
+        // The coordinates of the display(菜单显示的位置)
+        axis: { x: null, y: null },
+        // Menu options (菜单选项)
+        menulists: [ ]
+      },
+      // 右击连接/数据库 的当前数据
+      currRightClickObj : {
+        level : undefined,
+        connectionId : '',
+        database: ''
+      }
     }
   },
   created() {
@@ -211,8 +234,26 @@ export default {
       }
     },
     operationTree(event, data, node, t){
+      const x = event.clientX
+      const y = event.clientY
+      this.contextMenuData.axis = { x, y };
 
-      console.log("被右击了。。。。。", event, data, node, t)
+      if(node.level === 1){
+        // 数据库连接 右击
+
+        this.contextMenuData.menulists = [
+          { fnHandler : 'editConnection', btnName : '编辑连接' },
+          { fnHandler : 'newConnection', btnName : '新建连接' },
+          { fnHandler : 'delConnection', btnName : '删除连接' },
+          { fnHandler : 'newQuery', btnName : '新建查询' },
+          { fnHandler : 'newDatabase', btnName : '新建数据库' },
+        ]
+        this.currRightClickObj = { level : node.level, connectionId: data.connectionId }
+      }
+
+
+
+      console.log("被右击了。。。。。",data, node)
 
     },
     connectionChangeHandler(){
@@ -352,6 +393,8 @@ export default {
       this.runLoading = false
     },
 
+
+
     /*async queryTables() {
       // 查询所有表
       const res = await this.getTreeData()
@@ -381,11 +424,34 @@ export default {
         this.$refs.codemirrorEditor.setHintOptions(tips)
       }
     }*/
+
+    editConnection() {
+      console.log(this.currRightClickObj)
+    },
+    newConnection() {
+      console.log(this.currRightClickObj)
+    },
+    delConnection() {
+      console.log(this.currRightClickObj)
+    },
+    newQuery() {
+      console.log(this.currRightClickObj)
+    },
+    newDatabase() {
+      console.log(this.currRightClickObj)
+    }
+
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.vue-contextmenu-listWrapper {
+  padding-left: 5px !important;
+}
+.nav-name-right {
+  margin: 0px 10px !important;
+}
 .home {
   background-color: #F4F4F4;
   display: flex;
