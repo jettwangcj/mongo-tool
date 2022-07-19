@@ -61,7 +61,10 @@
     },
     methods: {
       createConnectionHandler(){
-        this.connectionDialogVisible = true;
+        this.createConnectionInfo = {
+          connectionDialogVisible : true,
+          currentConnectionId : undefined
+        }
       },
       cancelConnection(){
         this.createConnectionInfo = { connectionDialogVisible : false, currentConnectionId : undefined }
