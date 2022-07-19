@@ -46,8 +46,8 @@ public class MongoConnectionController {
 
 
     @ApiOperation(value = "删除mongo的连接")
-    @PostMapping("/delete")
-    public ResultResponse<String> deleteConnection(String id) {
+    @GetMapping("/delete")
+    public ResultResponse<String> deleteConnection(@RequestParam("connectionId") String id) {
         mongoConnectionService.deleteConnection(id);
         return ResultResponse.success();
     }

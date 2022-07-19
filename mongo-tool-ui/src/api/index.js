@@ -17,6 +17,14 @@ export function createConnection(params) {
     })
 }
 
+export function delConnection(params) {
+    return http({
+        url: '/connection/delete',
+        method: 'get',
+        params
+    })
+}
+
 export function getDataBaseTrees(params) {
   return http({
     url: '/connection/trees',

@@ -21,6 +21,8 @@ public class DataBaseTreeVo implements Serializable {
 
     private String name;
 
+    private String url;
+
     private boolean leafed;
 
 }

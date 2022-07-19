@@ -24,6 +24,10 @@
 
       </div>
 
+      <create-connection :connection = "createConnectionInfo"
+                         @cancel-connection="cancelConnection"
+                         @create-connection-sucess="createConnectionSuccess"></create-connection>
+
     </div>
     <div class="home-contaioner-right">
       <div class="database-select">
@@ -97,25 +101,20 @@
       </div>
     </div>
 
-    <div>
-      <el-dialog
-              title="提示"
-              :visible.sync="dialogVisible"
-              width="30%">
-        <span>这是一段信息</span>
-      </el-dialog>
-    </div>
-
   </div>
 </template>
 
 <script>
+import CreateConnection from "@/components/CreateConnection";
 import CodemirrorEditor from '@/components/CodemirrorEditor'
 import {  mapGetters, mapActions } from 'vuex'
+
+import { delConnection } from '@/api'
+
 export default {
   name: 'Home',
   components: {
-    CodemirrorEditor
+    CodemirrorEditor, CreateConnection
   },
   data() {
     return {
@@ -151,8 +150,6 @@ export default {
       databaseOptions: [],
       databaseValue: '',
 
-      dialogVisible: false,
-
       contextMenuData: {
         // the contextmenu name(@1.4.1 updated)
         menuName: "demo",
@@ -166,6 +163,11 @@ export default {
         level : undefined,
         connectionId : '',
         database: ''
+      },
+
+      createConnectionInfo : {
+        currentConnectionId: undefined,
+        connectionDialogVisible: false,
       }
     }
   },
@@ -215,21 +217,26 @@ export default {
         const { data } = res;
         const style = node.level === 0 ? 'color: green' : node.level === 1 ? 'color: #66b1ff' : 'color: #409eff'
         const icon = node.level === 0 ? 'iconfont icon-mongodb' : node.level === 1 ? 'iconfont icon-database' : 'iconfont icon-table'
-        resolve(data.map(item => ({
-          connectionId: item.connectionId,
-          icon: icon,
-          name: item.name,
-          style: style,
-          isLeaf: item.leafed
-        })));
+        resolve(data.map(item => {
+
+          if(node.level === 0){
+            // 获取的是连接信息
+            window.sessionStorage.setItem("connection-" + item.connectionId, JSON.stringify({ id: item.connectionId, name : item.name, url : item.url }))
+          }
+          return {
+            connectionId: item.connectionId,
+            icon: icon,
+            name: item.name,
+            style: style,
+            isLeaf: item.leafed
+          }
+
+        }));
       });
     },
     treeClick(data, node){
       if(node.level === 3) {
         console.log(node, data)
-
-      //  connectionId name
-       // this.getTableData({ connectionId : data.connectionId, documentName : data.name  }).then();
 
       }
     },
@@ -249,12 +256,9 @@ export default {
           { fnHandler : 'newDatabase', btnName : '新建数据库' },
         ]
         this.currRightClickObj = { level : node.level, connectionId: data.connectionId }
+      } else if(node.level === 2){
+        this.contextMenuData.menulists = []
       }
-
-
-
-      console.log("被右击了。。。。。",data, node)
-
     },
     connectionChangeHandler(){
         this.getDataBaseTrees({ level: 1, connectionId : this.connectionValue }).then(res => {
@@ -393,46 +397,46 @@ export default {
       this.runLoading = false
     },
 
-
-
-    /*async queryTables() {
-      // 查询所有表
-      const res = await this.getTreeData()
-      const { type, result } = res
-      if (type === '1' && result.length > 0) {
-        this.treeData = []
-        const tips = {}
-        result.forEach(async(tname) => {
-          if (tname.table_name && tname.table_name.trim() !== '') {
-            const treeObj = {
-              tname: tname.table_name,
-              fields: []
-            }
-            tips[tname.table_name] = []
-
-            // 查询表中的字段
-            const fieldRes = await this.getFieldNames({ tname: tname.table_name })
-            if (fieldRes.type === '1') {
-              treeObj.fields = [...fieldRes.result]
-              fieldRes.result.forEach(f => {
-                tips[tname.table_name].push(f.COLUMN_NAME)
-              })
-            }
-            this.treeData.push(treeObj)
-          }
-        })
-        this.$refs.codemirrorEditor.setHintOptions(tips)
+    cancelConnection(){
+      this.createConnectionInfo = {
+        connectionDialogVisible : false,
+        currentConnectionId : undefined
       }
-    }*/
-
+    },
+    createConnectionSuccess(){
+      this.createConnectionInfo = {
+        connectionDialogVisible : false,
+        currentConnectionId : undefined
+      }
+      this.$router.go(0)
+    },
     editConnection() {
-      console.log(this.currRightClickObj)
+      this.createConnectionInfo = {
+        connectionDialogVisible : true,
+        currentConnectionId : this.currRightClickObj.connectionId
+      }
     },
     newConnection() {
-      console.log(this.currRightClickObj)
+      this.createConnectionInfo = {
+        connectionDialogVisible : true,
+        currentConnectionId : undefined
+      }
     },
     delConnection() {
-      console.log(this.currRightClickObj)
+      this.$confirm('是否确认删除连接?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delConnection({ connectionId : this.currRightClickObj.connectionId}).then(res => {
+          const { code } = res
+          if(code === '00000'){
+            this.$message.success('删除成功！')
+            this.$router.go(0)
+          }
+          console.log(res);
+        });
+      });
     },
     newQuery() {
       console.log(this.currRightClickObj)
@@ -461,6 +465,7 @@ export default {
     flex: 1.1;
     height: 100%;
     background-color: #fff;
+    overflow: auto;
 
     .el-tabs {
       user-select: none;
@@ -524,7 +529,7 @@ export default {
       }
 
       // 命令集
-      .order-list {
+      /*.order-list {
         list-style: none;
         padding: 0;
         margin: 0;
@@ -547,7 +552,7 @@ export default {
             margin-right: 5px;
           }
         }
-      }
+      }*/
     }
   }
 

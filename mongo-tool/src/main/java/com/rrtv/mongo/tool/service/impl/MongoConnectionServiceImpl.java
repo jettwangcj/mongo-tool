@@ -39,7 +39,7 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
         ConnectionString connectionString = new ConnectionString(request.getUrl());
         List<String> hosts = connectionString.getHosts();
         Connection connection;
-        if(request.getId() != null){
+        if(StringUtils.isNotEmpty(request.getId())){
             connection = repository.findById(request.getId()).orElseThrow(() -> new RuntimeException("资源不存在"));
         } else {
             connection = new Connection();
@@ -53,7 +53,7 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
 
     private List<DataBaseTreeVo> queryConnectionList() {
         List<Connection> connections = repository.findAll();
-        return CollectionUtils.isEmpty(connections) ? new ArrayList<>() : connections.stream().map(item -> new DataBaseTreeVo(item.getId(), item.getName(), false)).collect(Collectors.toList());
+        return CollectionUtils.isEmpty(connections) ? new ArrayList<>() : connections.stream().map(item -> new DataBaseTreeVo(item.getId(), item.getName(), item.getUrl(), false)).collect(Collectors.toList());
     }
 
     @Override
@@ -65,7 +65,7 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
         Connection connection = repository.findById(connectionId).orElseThrow(() -> new RuntimeException("资源不存在"));
         MongoClient mongoClient = MongoClients.create(connection.getUrl());
         List<DataBaseTreeVo> databases = new ArrayList<>();
-        mongoClient.listDatabaseNames().forEach(item -> databases.add(new DataBaseTreeVo(connection.getId(), item, false)));
+        mongoClient.listDatabaseNames().forEach(item -> databases.add(new DataBaseTreeVo(connection.getId(), item, connection.getUrl(), false)));
         mongoClient.close();
         return databases;
     }
@@ -99,7 +99,7 @@ public class MongoConnectionServiceImpl implements MongoConnectionService {
         MongoClient mongoClient = MongoClients.create(connection.getUrl());
         MongoDatabase database = mongoClient.getDatabase(dataBaseName);
         List<DataBaseTreeVo> documents = new ArrayList<>();
-        database.listCollectionNames().forEach(item -> documents.add(new DataBaseTreeVo(connection.getId(), item, true)));
+        database.listCollectionNames().forEach(item -> documents.add(new DataBaseTreeVo(connection.getId(), item, connection.getUrl(), true)));
         mongoClient.close();
         return documents;
     }
