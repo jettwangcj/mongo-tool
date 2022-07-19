@@ -30,75 +30,16 @@
 
     </div>
     <div class="home-contaioner-right">
-      <div class="database-select">
-        <el-select v-model="connectionValue" size = "small"  filterable @change="connectionChangeHandler" placeholder="--请选择连接--">
-            <template #prefix>
-                <span style="display: table-cell;vertical-align: middle;">
-                  <i class="iconfont icon-mongodb" style="color: green;top: 50%;position: absolute;transform: translateY(-50%);"></i>
-                </span>
-            </template>
-          <el-option
-                  v-for="item in connectionOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-          </el-option>
-        </el-select>
 
-        <el-select v-model="databaseValue" size = "small" style = "margin-left: 1%"  filterable placeholder="--请选择数据库--">
-            <template #prefix>
-                <span style="display: table-cell;vertical-align: middle;">
-                  <i class="iconfont icon-database" style="color:#66b1ff;top: 50%;position: absolute;transform: translateY(-50%);"></i>
-                </span>
-            </template>
-            <el-option
-                  v-for="item in databaseOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-            </el-option>
-        </el-select>
-      </div>
-      <!-- SQL编辑器 -->
-      <codemirror-editor
-        ref="codemirrorEditor"
-        :run-loading="runLoading"
-        @input="onEditorInput"
-        @run="onSQLRun"
-        @stop="onSQLStop"
-        @commit="onSQLCommit"
-      ></codemirror-editor>
-      <div class="tables-result" :style="{height: `${tablesHeight}px`}">
-        <el-tabs type="border-card" style="height: 99%">
-          <el-tab-pane label="信息">
-            <span v-if="runType === 0" class="el-icon-info" style="color: #909399;"></span>
-            <span v-if="runType === 1" class="el-icon-success" style="color: #67C23A;"></span>
-            <span v-if="runType === 2" class="el-icon-warning" style="color: #E6A23C;"></span>
-            <span v-if="runType === 3" class="el-icon-error" style="color: #F56C6C;"></span>
-            {{ runResult }}
-<!--            <template v-if="runType === 3">
-              <div class="error-message"><b>message：</b>{{ errMsg.sqlMessage }}</div>
-              <div class="error-message"><b>errno：</b>{{ errMsg.errno }}</div>
-              <div class="error-message"><b>sql：</b>"{{ errMsg.sql }}"</div>
-              <div class="error-message"><b>code：</b>{{ errMsg.code }}</div>
-              <div class="error-message"><b>sqlState：</b>{{ errMsg.sqlState }}</div>
-            </template>-->
-          </el-tab-pane>
-          <el-tab-pane label="结果">
-            <el-table
-              :data="tableData"
-              border
-              :style="{width: '100%', height: `${tablesHeight - 80}px`}">
-              <el-table-column
-                v-for="item in columns"
-                :key="item.value"
-                :prop="item.value"
-                :label="item.label"
-              />
-            </el-table>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
+      <el-tabs v-model="editableTabsValue" type="card" :closable = "isClosable" @tab-remove="removeTab">
+        <el-tab-pane v-for="(item, index) in editableTabs"
+                :key="item.name"
+                :label="item.title"
+                :name="item.name">
+          <query-panel></query-panel>
+        </el-tab-pane>
+      </el-tabs>
+
     </div>
 
   </div>
@@ -106,15 +47,14 @@
 
 <script>
 import CreateConnection from "@/components/CreateConnection";
-import CodemirrorEditor from '@/components/CodemirrorEditor'
+import QueryPanel from '@/components/QueryPanel'
 import {  mapGetters, mapActions } from 'vuex'
-
 import { delConnection } from '@/api'
 
 export default {
   name: 'Home',
   components: {
-    CodemirrorEditor, CreateConnection
+    CreateConnection, QueryPanel
   },
   data() {
     return {
@@ -128,27 +68,7 @@ export default {
       tablesHeight: 0,
       foldIndex: [], // 记录展开状态的表结构，存入index
       treeData: [], // 左侧展示的表结构
-      runResult: '暂无数据', // 运行结果提示
-      runType: 0, // 运行结果类型，0无结果、1成功、2警告、3异常
-      tableData: [], // 运行结果的表数据展示
-      columns: [], // 运行的表结构，对象元素，{label: '', value: ''}
-      code: '', // 实时输入的代码
-      runLoading: false, // 运行加载状态
-      errMsg: {
-        sqlMessage: '',
-        errno: '',
-        sql: '',
-        code: '',
-        sqlState: ''
-      },
-
       treeLoading: false,
-
-      connectionOptions: [],
-      connectionValue: '',
-
-      databaseOptions: [],
-      databaseValue: '',
 
       contextMenuData: {
         // the contextmenu name(@1.4.1 updated)
@@ -168,19 +88,17 @@ export default {
       createConnectionInfo : {
         currentConnectionId: undefined,
         connectionDialogVisible: false,
-      }
+      },
+
+      isClosable : false,
+      editableTabsValue: '1',
+      editableTabs: [{
+        title: '无标题-查询',
+        name: '1',
+        type: 'query'
+      }],
+      tabIndex: 1
     }
-  },
-  created() {
-    this.treeLoading = true;
-    this.getDataBaseTrees({ level: 0 }).then(res => {
-      const { data } = res;
-      this.connectionOptions = data.map(item => ({
-        value: item.connectionId,
-        label: item.name,
-      }));
-      this.treeLoading = false
-    });
   },
   mounted() {
     this.winHeight = window.innerHeight - 52
@@ -200,9 +118,6 @@ export default {
     ...mapActions('dbs', [
       'createDatabase',
       'execute'
-    ]),
-    ...mapActions('commits', [
-      'addLogs'
     ]),
     ...mapActions('http', [
       'getTableData',
@@ -260,143 +175,6 @@ export default {
         this.contextMenuData.menulists = []
       }
     },
-    connectionChangeHandler(){
-        this.getDataBaseTrees({ level: 1, connectionId : this.connectionValue }).then(res => {
-            const { data } = res;
-            this.databaseOptions = data.map(item => ({
-                value: item.name,
-                label: item.name,
-            }))
-        });
-    },
-    onEditorInput(code) {
-      // 编辑器输入事件
-      this.code = code
-    },
-    onSQLRun() {
-      // SQL编辑器运行事件
-      this.executeSql()
-    },
-    onSQLStop() {
-      // SQL编辑器停止运行事件
-    },
-    onSQLCommit() {
-      // SQL编辑器提交事件
-      if (this.code.trim() === '') {
-        this.$message.warning('请先编辑 SQL 命令！')
-        return
-      }
-      this.$prompt('请输入命令标题：', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputValidator: (val) => {
-          if (val.trim() === '') {
-            return false
-          }
-          return true
-        },
-        inputErrorMessage: '命令标题不能为空'
-      }).then(({ value }) => {
-        if (value.trim() !== '') {
-          const logs = {
-            title: value,
-            sql: this.code,
-            createTime: Date.now()
-          }
-          this.addLogs(logs)
-          this.$message.success('提交成功！')
-        } else {
-          this.$message.error('提交失败！')
-        }
-      }).catch(() => {
-        this.$message.warning('已取消提交')
-      })
-    },
-    async executeSql() {
-      // 执行SQL语句
-      if (this.code.trim() === '') {
-        this.$message.warning('请先编辑 SQL 命令！')
-        return
-      }
-
-      if(this.connectionValue === '' || this.databaseValue === ''){
-        this.$message.warning('请先选择连接和数据库！')
-        return
-      }
-
-      this.runLoading = true
-      this.tableData = []
-      this.columns = []
-      this.runResult = '执行中...'
-      this.runType = 0
-      this.errMsg = {}
-      const token = this.connectionValue.concat('#').concat(this.databaseValue)
-      const res = await this.sendSQL({ sql: this.code, token })
-
-      const { code } = res
-      if(code === '00000'){
-        const { sqlType, success, failMessage, columns, data } = res.data
-        if(sqlType === 1){
-          // 查询语句
-          if(success){
-            // 执行成功
-            this.runType = 1
-            this.runResult = `成功查询 ${data.length} 条数据`
-            if (data.length > 0) {
-              this.tableData = [...data]
-              columns.forEach(column => this.columns.push({ label: column,value: column }))
-            }
-          } else {
-            // 执行失败
-
-          }
-        } else {
-          // 非查询语句
-
-        }
-
-      } else {
-        this.runType = 3
-        this.runResult = '你小子把服务器整挂了。。。。。一个字：绝。。。'
-      }
-
-
-
-
-
-     /* if (this.code.startsWith('SELECT')) {
-        if (type === '1') {
-          this.runType = 1
-          this.runResult = `成功查询 ${result.length} 条数据`
-          if (result.length > 0) {
-            this.tableData = [...result]
-            const obj = { ...this.tableData[0] }
-            for(let key in obj) {
-              this.columns.push({
-                label: key,
-                value: key
-              })
-            }
-          }
-        } else if (type === '2') {
-          this.runType = 3
-          this.runResult = '执行失败！'
-          this.errMsg = {...result}
-        }
-      } else {
-        if (type === '1') {
-          this.runType = 1
-          this.runResult = `执行成功！${result.affectedRows}行数据受影响`
-        //  this.queryTables()
-        } else if (type === '2') {
-          this.runType = 3
-          this.runResult = '执行失败！'
-          this.errMsg = {...result}
-        }
-      }*/
-      this.runLoading = false
-    },
-
     cancelConnection(){
       this.createConnectionInfo = {
         connectionDialogVisible : false,
@@ -439,12 +217,42 @@ export default {
       });
     },
     newQuery() {
-      console.log(this.currRightClickObj)
+      const newTabName = ++ this.tabIndex + '';
+      this.editableTabs.push({
+        title: '无标题-查询',
+        name: newTabName,
+        type: 'query'
+      });
+      this.editableTabsValue = newTabName;
+      this.enableClosable();
     },
     newDatabase() {
       console.log(this.currRightClickObj)
+    },
+    enableClosable(){
+      if(this.editableTabs.length > 1){
+        this.isClosable = true;
+      } else {
+        this.isClosable = false;
+      }
+    },
+    removeTab(targetName) {
+      let tabs = this.editableTabs;
+      let activeName = this.editableTabsValue;
+      if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          if (tab.name === targetName) {
+            let nextTab = tabs[index + 1] || tabs[index - 1];
+            if (nextTab) {
+              activeName = nextTab.name;
+            }
+          }
+        });
+      }
+      this.editableTabsValue = activeName;
+      this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+      this.enableClosable();
     }
-
   }
 }
 </script>
@@ -456,6 +264,7 @@ export default {
 .nav-name-right {
   margin: 0px 10px !important;
 }
+
 .home {
   background-color: #F4F4F4;
   display: flex;
@@ -561,7 +370,7 @@ export default {
     flex: 6;
     height: 100%;
 
-    .database-select {
+    /*.database-select {
       margin-left: 2%;
       margin-top: 1%;
     }
@@ -632,7 +441,7 @@ export default {
           background: rgba(0, 0, 0, 0.2);
         }
       }
-    }
+    }*/
   }
 
 }

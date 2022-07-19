@@ -24,12 +24,7 @@ const actions = {
     const data = await getDataBaseTrees(params)
     return data
   },
-  async getFieldNames({ commit }, params) {
-    const data = await getFieldNames(params)
-    return data
-  },
   async sendSQL({ commit }, params) {
-    console.log('header1111:', params)
     const data = await sendSQL(params)
     return data
   }
